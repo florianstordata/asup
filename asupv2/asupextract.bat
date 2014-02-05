@@ -12,7 +12,7 @@ rem Initialisation des varibales
 setlocal EnableDelayedExpansion
 set source="C:\ASUPV2"
 
-rem Choix dun repertoire de destination via le vbs
+rem Choix d un repertoire de destination via le vbs
 
 echo.
 echo  Choix du repertoire de destination...
@@ -108,7 +108,7 @@ rem	CLS
 	:: Fin de traitement ems
 	
 	:: Ouvrir lASUP extrait
-	%SystemRoot%\explorer.exe %destination%\%~n1
+	REM %SystemRoot%\explorer.exe %destination%\%~n1
 	
 :fin
 exit
