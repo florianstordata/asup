@@ -12,7 +12,7 @@ rem Initialisation des varibales
 setlocal EnableDelayedExpansion
 set source="C:\ASUPV2"
 
-rem Choix d un repertoire de destination via le vbs
+rem Choix dun repertoire de destination via le vbs
 
 echo.
 echo  Choix du repertoire de destination...
@@ -108,7 +108,32 @@ rem	CLS
 	:: Fin de traitement ems
 	
 	:: Ouvrir lASUP extrait
-	REM %SystemRoot%\explorer.exe %destination%\%~n1
+	
+rem	%SystemRoot%\explorer.exe %destination%\%~n1
+
+pushd %destination%\%~n1
+
+:: split du fichier fourni avec comme separateur "===== "
+csplit -ks %~dpnx1 "/^===== /" {*}
+
+
+:: boucle pour renommer les fichiers splités en fonction de la commande passé
+
+FOR /r %%X IN (xx*) DO CALL :loopbody %%X
+
+GOTO :EOF
+
+:loopbody
+:: on recupere la 1ere ligne du fichier 
+head -n 1 %1 > var.txt
+:: on variabilise la ligne recuperé
+set /P name=<var.txt
+:: on renomme le fichier xx0* avec le nom de la commande netapp pour plus de lisibilité 
+mv "%1" "%name:~6,-6%.txt"
+rem echo "%1" "%name%" "%name:~6,-6%" >> rename.txt
+:: on supprime le fichier temporaire
+del var.txt
+GOTO :EOF
 	
 :fin
 exit
@@ -201,7 +226,7 @@ rem	CLS
 	:: Fin de traitement ems	
 		
 	:: Ouvrir l ASUP extrait
-	%SystemRoot%\explorer.exe %destination%\%~n1
+rem	%SystemRoot%\explorer.exe %destination%\%~n1
 
 goto fin1
 
@@ -220,29 +245,29 @@ pause
 :fin1
 exit
 
-:split
-:: execution dans le repertoire
-pushd %destination%\%~n1
+REM :split
+REM :: execution dans le repertoire
+REM pushd %destination%\%~n1
 
-:: split du fichier fourni avec comme separateur "===== "
-csplit -ks %~dpnx1 "/^===== /" {*}
+REM :: split du fichier fourni avec comme separateur "===== "
+REM csplit -ks %~dpnx1 "/^===== /" {*}
 
 
-:: boucle pour renommer les fichiers splités en fonction de la commande passé
+REM :: boucle pour renommer les fichiers splités en fonction de la commande passé
 
-FOR /r %%X IN (xx*) DO CALL :loopbody %%X
+REM FOR /r %%X IN (xx*) DO CALL :loopbody %%X
 
-GOTO :EOF
+REM GOTO :EOF
 
-:loopbody
-:: on recupere la 1ere ligne du fichier 
-head -n 1 %1 > var.txt
-:: on variabilise la ligne recuperé
-set /P name=<var.txt
-:: on renomme le fichier xx0* avec le nom de la commande netapp pour plus de lisibilité 
-mv "%1" "%name:~6,-6%.txt"
+REM :loopbody
+REM :: on recupere la 1ere ligne du fichier 
+REM head -n 1 %1 > var.txt
+REM :: on variabilise la ligne recuperé
+REM set /P name=<var.txt
+REM :: on renomme le fichier xx0* avec le nom de la commande netapp pour plus de lisibilité 
+REM mv "%1" "%name:~6,-6%.txt"
 rem echo "%1" "%name%" "%name:~6,-6%" >> rename.txt
-:: on supprime le fichier temporaire
-del var.txt
-GOTO :EOF
-exit
+REM :: on supprime le fichier temporaire
+REM del var.txt
+REM GOTO :EOF
+rem exit
