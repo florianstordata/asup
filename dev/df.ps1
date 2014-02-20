@@ -9,7 +9,7 @@ $serial
 $name=$split[3]
 $name
 
-if(test-path "$serial.xlsx") {remove-item "$serial.xlsx"}
+if(test-path "$name-$serial.xlsx") {remove-item "$name-$serial.xlsx"}
 
 # declaration des fichiers textes
 $df=get-content "$item\df.txt" | ? {$_ -NotMatch "==="}
@@ -23,7 +23,7 @@ $dfa -replace '\s+', ',' >cdfa.csv
 $dfs -replace '\s+', ',' >cdfs.csv
 
 # on speicifie le fichier de sortie 
-$xlout = "$($rep)\$serial.xlsx"
+$xlout = "$($rep)\$name-$serial.xlsx"
 
 # on importe et variabilise les csv precedement généré
 $bladf=import-csv cdf.csv -header Filesystem, kbytes, used, avail, capacity, "Mounted on" | where {$_.Filesystem -match "/vol/" -or $_.Filesystem -match "Filesystem"}
