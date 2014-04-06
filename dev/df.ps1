@@ -1,12 +1,13 @@
 # on recupere le repertoire courant
 $rep = (Get-Location).path
+$date=get-date
 
 $items=Get-ChildItem -Directory -Name
 foreach ($item in $items) { 
 $split=$item.Split("_") 
 $serial=$split[1]
 $serial
-$name=$split[3]
+$name=$split[2]
 $name
 
 if(test-path "$name-$serial.xlsx") {remove-item "$name-$serial.xlsx"}
@@ -112,3 +113,5 @@ remove-item cdf.csv
 
 }
 
+$elapsed=[math]::round(((Get-Date) - $Date).TotalMinutes,2)
+echo "This report took $elapsed minutes to run all scripts."
