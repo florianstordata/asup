@@ -25,7 +25,7 @@ If ((get-date).DayOfWeek -eq "sunday") {$delta=-0}
  $day=$lastsunday.day
  
 #mis en coresspondance des clients avec le rerpertoire
-$refs=ipcsv $csv -Delimiter ";" | where {$_.folder -ne "$null"} 
+$refs=ipcsv $csv -Delimiter ";" | where {$_.folder -match "dexia"} 
 
 # attribution du repertoire dans la variable $rep
 foreach ($ref in $refs) {

@@ -1,8 +1,7 @@
 ﻿$exp="services_manages@stordata.fr"
 $dest="mbehidi@lagardere.fr"
-$dest2="florian.firminhac@stordata.fr"
-$filename=get-item "D:\_Stordata\lagardere\Lagardere_Services_managés-20140331.pdf"
-
+#$dest2="dbarrile@index-education.fr"
+$filename="D:\_Stordata\lagardere\Lagardere_Services_managés-20140408.pdf"
 
 #$exp=Read-Host "qui est l'expediteur ?"
 #$dest=Read-Host "quelle est l'adresse du destinataire ?"
@@ -18,14 +17,18 @@ $smtp.EnableSsl = $false
 #$smtp.Credentials = New-Object System.Net.NetworkCredential(“$user”, “$pwd”); # Put username without the @GMAIL.com or – @gmail.com
 $msg.From = “$exp”
 $msg.To.Add($dest)
-$msg.to.add($dest2)
+#$msg.to.add($dest2)
 $msg.Subject = “Services Managés”
-$msg.Body = “Bonjour 
+$msg.Body = “Bonjour, 
+
 
 Veuillez trouver ci joint le rapport des Services Commvault
 
 Cordialement
+
 L’équipe du Support Stordata
+
 ”
 $msg.Attachments.Add($att)
 $smtp.Send($msg)
+echo "message envoyé a $dest"

@@ -8,16 +8,17 @@ $7z="$asupv2\7za.exe"
 
 # traitement des Weeklylog
 $items=Get-Item "$destination\*WEEKLY_LOG-INFO.box"
-
+#if (-not (test-path "$destination\box")) {new-item -ItemType Directory "$destination\box"}
 foreach ($item in $items) {
  
  $name=$item.BaseName
- $extract="$($item.BaseName.Split("_")[0])_$($item.BaseName.Split("_")[1])_$($item.BaseName.Split("_")[3])"
+ $extract="WKL_$($item.BaseName.Split("_")[0])_$($item.BaseName.Split("_")[1])_$($item.BaseName.Split("_")[3])"
 
  if (-not (test-path "$destination\$extract")) {new-item -ItemType Directory "$destination\$extract"}
 
  
 & $asupv2\Uud64winpe.exe "$item" /Extract /OutDir="$destination\$extract" | Out-Null
+#Move-Item $item "$destination\box\"
  }
 
 # traitement des management log (v8+)
@@ -28,12 +29,13 @@ foreach ($item in $items) {
 foreach ($mgmt in $mgmts) {
  
  $name=$mgmt.BaseName
- $extract="$($mgmt.BaseName.Split("_")[0])_$($mgmt.BaseName.Split("_")[1])_$($mgmt.BaseName.Split("_")[3])"
+ $extract="MGMT_$($mgmt.BaseName.Split("_")[0])_$($mgmt.BaseName.Split("_")[1])_$($mgmt.BaseName.Split("_")[3])"
 
  if (-not (test-path "$destination\$extract")) {new-item -ItemType Directory "$destination\$extract"}
 
  
 & $asupv2\Uud64winpe.exe "$mgmt" /Extract /OutDir="$destination\$extract" | Out-Null
+#Move-Item $mgmt "$destination\box"
  }
 
  #recuperation des repertoires suite a la decompression pour traitement des archives
@@ -41,21 +43,43 @@ foreach ($mgmt in $mgmts) {
  $directory=dir -Path $destination -Directory
 
  foreach ($dir in $directory){
-
+ $rep=$dir.basename.split("_")
+ $finale=$($rep[1]) + "_" + ($rep[2]) + "_" + ($rep[3])
+ if (-not (test-path "$destination\$finale")) {new-item -ItemType Directory "$destination\$finale"}
 # traitement des archives
+Move-Item "$dir\message1*" -Destination $finale
 do {
 
 $archives=Get-Item -Path $destination\$dir\* -Include *.7z, *.tar, *.gz
 
 foreach ($archive in $archives.Name)
 {
-& "$7z" x "$destination\$dir\$archive" -o"$destination\$dir" -aoa
+& "$7z" x "$destination\$dir\$archive" -o"$destination\$finale" -aoa
 Remove-Item "$destination\$dir\$archive"
 }}
 while ($flagArchive=(Test-Path -Path $destination\$dir\* -Include *.7z, *.tar, *.gz))
+
+Remove-Item $dir
 }
 
+$ntaps=dir -Path $destination -Directory -Filter NTAP*
+ foreach ($ntap in $ntaps){
+
+do {
+
+$archives=Get-Item -Path $destination\$ntap\* -Include *.7z, *.tar, *.gz
+
+foreach ($archive in $archives.Name)
+{
+& "$7z" x "$destination\$ntap\$archive" -o"$destination\$ntap" -aoa
+Remove-Item "$destination\$ntap\$archive"
+}}
+while ($flagArchive=(Test-Path -Path $destination\$ntap\* -Include *.7z, *.tar, *.gz))
+}
+
+
 #recuperation des repertoires suite a la decompression pour traitement des EMS
+$directory=dir -Path $destination -Directory
 
  foreach ($dir in $directory){
 
