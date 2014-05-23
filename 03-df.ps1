@@ -1,9 +1,13 @@
-# on recupere le repertoire courant
-$rep = (Get-Location).path
+﻿$datelog=Get-Date -UFormat %d-%m-%y
+Start-Transcript -path "D:\_Stordata\log\$datelog.log" -Append
 $date=get-date
+
 $destination="D:\_Stordata\traitement"
 
 cd $destination
+
+# on recupere le repertoire courant
+$rep = (Get-Location).path
 
 $items=Get-ChildItem -Directory -Name
 foreach ($item in $items) {
@@ -118,3 +122,5 @@ remove-item cdf.csv
 
 $elapsed=[math]::round(((Get-Date) - $Date).TotalMinutes,2)
 echo "This report took $elapsed minutes to run all scripts."
+
+Stop-Transcript

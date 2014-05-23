@@ -1,5 +1,5 @@
-﻿$destination="D:\_Stordata\traitement"
-$items=Get-Item "$destination\*.box"
+﻿$destination="D:\_Stordata\traitement\_traités"
+$items=Get-Item "$destination\*weekly*.box"
 foreach($item in $items){
 $version=Get-Content $item | where {$_ -match "VERSION=NetApp"}
 $serial=$($item.BaseName.Split("_")[1])
