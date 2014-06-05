@@ -6,7 +6,7 @@ $destination="D:\_Stordata\traitement"
 $7z="$asupv2\7za.exe"
 
 $datelog=Get-Date -UFormat %d-%m-%y
-Start-Transcript -path "D:\_Stordata\log\$datelog.log" -Append
+Start-Transcript -path "D:\_Stordata\log\asup-$datelog.log" -Append
 
 
 # recuperation des *.box copié et decompression avec Uud64winpe.exe
@@ -14,7 +14,6 @@ Write-host "_                                        _" -foregroundcolor "black"
 Write-Host "________ traitement des Weeklylog ________" -foregroundcolor "black" -BackgroundColor "white"
 Write-Host "_                                        _" -foregroundcolor "black" -BackgroundColor "white"
 $items=Get-Item "$destination\*WEEKLY_LOG-INFO.box"
-#if (-not (test-path "$destination\box")) {new-item -ItemType Directory "$destination\box"}
 foreach ($item in $items) {
  
  $name=$item.BaseName
@@ -24,6 +23,7 @@ foreach ($item in $items) {
 
  
 & $asupv2\Uud64winpe.exe "$item" /Extract /OutDir="$destination\$extract" | Out-Null
+
  }
 
 Write-host "_                                                   _" -foregroundcolor "black" -BackgroundColor "white"
@@ -42,27 +42,32 @@ foreach ($mgmt in $mgmts) {
 
  
 & $asupv2\Uud64winpe.exe "$mgmt" /Extract /OutDir="$destination\$extract" | Out-Null
+
  }
 
 
- #recuperation des repertoires suite a la decompression pour traitement des archives
-
- $directory=dir -Path $destination -Directory
 
 Write-host "_                                                  _" -foregroundcolor "black" -BackgroundColor "white"
 Write-Host "________ deplacement des fichiers Message1* ________" -foregroundcolor "black" -BackgroundColor "white"
 Write-Host "________ traitement des archives 1ere passe ________" -foregroundcolor "black" -BackgroundColor "white"
 Write-Host "_                                                  _" -foregroundcolor "black" -BackgroundColor "white"
 
+ #recuperation des repertoires suite a la decompression pour traitement des archives
+
+ $directory=dir -Path $destination -Directory
+
 
  foreach ($dir in $directory){
  $rep=$dir.basename.split("_")
  $finale=$($rep[1]) + "_" + ($rep[2]) + "_" + ($rep[3])
  if (-not (test-path "$destination\$finale")) {new-item -ItemType Directory "$destination\$finale"}
-# traitement des archives
+# move du fichier message1*
 
 Move-Item "$destination\$dir\message1*" -Destination $destination\$finale
+$box=$($rep[1]) + "_" + ($rep[2]) + "_" + "*" + "WEEKLY_LOG-INFO.box"
+move-item -path "$destination\$box" -Destination $destination\$finale
 
+# traitement des archives
 do {
 
 $archives=Get-Item -Path $destination\$dir\* -Include *.7z, *.tar, *.gz
@@ -74,7 +79,7 @@ Remove-Item "$destination\$dir\$archive"
 }}
 while ($flagArchive=(Test-Path -Path $destination\$dir\* -Include *.7z, *.tar, *.gz))
 
-Remove-Item $destination\$dir
+Remove-Item $destination\$dir -recurse
 }
 
 Write-host "_                                                  _" -foregroundcolor "black" -BackgroundColor "white"
@@ -133,7 +138,7 @@ Write-Host "________ Split des fichiers Message1* ________" -foregroundcolor "bl
 Write-Host "_                                            _" -foregroundcolor "black" -BackgroundColor "white"
 
  foreach ($dir in $directory){
-$message1=Get-Item "$destination\$dir\message1*(WEEKLY_LOG) INFO.txt"
+$message1=Get-Item "$destination\$dir\*WEEKLY_LOG-INFO.box"
  $dir
  $message1
 
@@ -173,18 +178,18 @@ Write-Host "_                                       _" -foregroundcolor "black" 
 
 foreach ($dir in $directory){
 
-if ((Test-Path $dir\*.dump) -eq "true")
-{
+#if ((Test-Path $dir\*.dump) -eq "true")
+#{
 $file="$dir\_grep.txt"
 $dumpalert=Get-Content $dir\*.dump | where {$_ -match "alert"}
 $dumpcritical=Get-Content $dir\*.dump | where {$_ -match "critical"}
 $dumperror=Get-Content $dir\*.dump | where {$_ -match "error"}
 $dumpwarning=Get-Content $dir\*.dump | where {$_ -match "warning"}
 
-$msgalert=Get-Content $dir\messages.* | where {$_ -match "alert"}
-$msgcritical=Get-Content $dir\messages.* | where {$_ -match "critical"}
-$msgerror=Get-Content $dir\messages.* | where {$_ -match "error"}
-$msgwarning=Get-Content $dir\messages.* | where {$_ -match "warning"}
+$msgalert=Get-Content $dir\*messages* | where {$_ -match "alert"}
+$msgcritical=Get-Content $dir\*messages* | where {$_ -match "critical"}
+$msgerror=Get-Content $dir\*messages* | where {$_ -match "error"}
+$msgwarning=Get-Content $dir\*messages* | where {$_ -match "warning"}
 
 echo "------- dump -------" > $file
 echo "nbre de ligne contenant Alert : $($dumpalert.count)" >> $file
@@ -246,17 +251,23 @@ echo " "  >> $file
 
 echo "------- messages -------" >> $file
 echo $msgwarning >> $file
-
 }
 
+
+
+foreach ($dir in $directory){
 if ((Test-Path $dir\ENVIRONMENT*) -eq "true")
 {
-$env=Get-Content .\ENVIRONMENT.txt | where {$_ -match '^Voltage.Status' -or $_ -match 'psu[0-9] FAN[0-9] FAULT' -or $_ -match 'psu[0-9].pseudo' -or $_ -match 'psu[0-9].status' -or $_ -match 'Battery.charge'}
+$env=Get-Content $dir\ENVIRONMENT.txt | where {$_ -match '^Voltage.Status' -or $_ -match 'psu[0-9] FAN[0-9] FAULT' -or $_ -match 'psu[0-9].pseudo' -or $_ -match 'psu[0-9].status' -or $_ -match 'Battery.charge'}
 
 $filenv="$dir\_env.txt"
 echo $env  > $filenv
 }
 }
+
+
+
+
 
 
 Stop-Transcript

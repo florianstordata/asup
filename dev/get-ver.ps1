@@ -1,4 +1,4 @@
-﻿$destination="D:\_Stordata\traitement\_traités"
+﻿$destination="D:\_Stordata\traitement\_traité"
 $items=Get-Item "$destination\*weekly*.box"
 foreach($item in $items){
 $version=Get-Content $item | where {$_ -match "VERSION=NetApp"}
