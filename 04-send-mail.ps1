@@ -31,8 +31,8 @@ $dest3="vide"
 #$dest="franck.pignard@biogemma.com"
 #$dest="osimpere@bouyguestelecom.fr"
 
-$dest="mmouheb@ch-montfermeil.fr"
-$dest2="dschmitt@ch-montfermeil.fr"
+#$dest="mmouheb@ch-montfermeil.fr"
+#$dest2="dschmitt@ch-montfermeil.fr"
 
 # Networker
 #$dest="GCA-Networker@groupama-ca.fr"
@@ -45,12 +45,12 @@ $dest2="dschmitt@ch-montfermeil.fr"
 #$dest="michel.radovanovitch@tigf.fr"
 
 # Commvault
-#$dest="mbehidi@lagardere.fr"
+$dest="mbehidi@lagardere.fr"
 #$dest="LBUART@groupama-loire-bretagne.fr"
 #$dest="philippe.rousseaux@mt.com"
 #$dest="jean-francois.davis@sdmo.com"
 
-$filename="D:\_Stordata\Template\_CR\30-ch-montfermeil\ch-montfermeil-Managed-Services-20140601.pdf"
+$filename="D:\_Stordata\Template\_CR\98-cv-Lagardere\Lagardere_20140605.pdf"
 
 
 
@@ -76,7 +76,7 @@ $msg.Subject = “Services Managés”
 $msg.Body = “Bonjour, 
 
 
-Veuillez trouver ci joint le rapport concernant la periode du 25/05/2014 au 01/06/2014
+Veuillez trouver ci joint le rapport concernant la periode du 04/06/2014 au 05/06/2014
 
 Cordialement
 

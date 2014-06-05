@@ -91,16 +91,21 @@ Move-Item $destination\$body\$body-cm_hourly_stats.gz $destination\
 
 
 # envoi par ftp du fichier 
-#$stats=Get-ChildItem $destination *cm_hourly_stats.gz -Recurse
+$password = ConvertTo-SecureString "K&dSt0red0t020140429" -AsPlainText -Force
+$username = "stordata"
+$ftpCreds = New-Object System.Management.Automation.PSCredential $Username, $Password
+set-FTPConnection -Credentials $ftpCreds -server ftp://ftp.k-and-decide.com -UsePassive 
 
-#foreach ($stat in $stats) {
-#Add-FTPItem -LocalPath $stat
-#}
+$stats=Get-ChildItem $destination *cm_hourly_stats.gz -Recurse
+
+foreach ($stat in $stats) {
+Echo "Envoi du Fichier $stat.fullname"
+send-FTPItem -LocalPath $stat.fullname -Path /test -Overwrite
+
+}
 
 $elapsed=[math]::round(((Get-Date) - $Date).TotalMinutes,2)
 echo "This report took $elapsed minutes to run all scripts."
 
-
-#set-FTPConnection -Credentials stordata -server ftp://ftp.k-and-decide.com -UsePassive 
 
 Stop-Transcript
